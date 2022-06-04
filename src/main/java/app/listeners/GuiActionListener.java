@@ -23,9 +23,9 @@ public class GuiActionListener implements ActionListener {
     private void handleMenuInteraction(ActionEvent e) {
         JMenuItem item = (JMenuItem)e.getSource();
 
-        if(item.getText().equals(gui.getMenuOptions().get("Exit"))) {
-            gui.dispose();
-        } else if(item.getText().equals(gui.getMenuOptions().get("New"))) {
+       // if(item.getText().equals(gui.getMenuOptions().get("Exit"))) {
+       //     gui.dispose(); }
+        if(item.getText().equals(gui.getMenuOptions().get("New"))) {
             gui.reset();
         }
     }

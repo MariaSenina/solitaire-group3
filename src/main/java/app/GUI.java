@@ -52,7 +52,7 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        //createTopMenu();
+        createTopMenu();
 
         FlowLayout flow = new FlowLayout(FlowLayout.CENTER);
         flow.setAlignOnBaseline(true);
@@ -119,7 +119,7 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
         menuOptions.put("Exit", "Exit");
     }
 
-    /*
+    
     private void createTopMenu() {
         menuBar = new JMenuBar();
 
@@ -129,7 +129,7 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
 
         MenuOption[] fileOptions = new MenuOption[] {
                 new MenuOption(menuOptions.get("New"), KeyEvent.VK_N),
-                new MenuOption(menuOptions.get("Exit"), KeyEvent.VK_X)
+               // new MenuOption(menuOptions.get("Exit"), KeyEvent.VK_X)
         };
 
         for(MenuOption option: fileOptions) {
@@ -142,7 +142,7 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
 
         setJMenuBar(menuBar);
     }
-*/
+
 
     @Override
     public void mouseDragged(MouseEvent e) {
