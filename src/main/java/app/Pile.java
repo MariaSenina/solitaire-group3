@@ -28,7 +28,7 @@ public class Pile extends JLayeredPane {
     }
 
     public void addCard(Card c) {
-        c.setLocation(0, offset * cards.size());
+    	c.setLocation(0, offset * cards.size());
         cards.add(c);
 
         this.add(c, 1, 0);
@@ -129,6 +129,28 @@ public class Pile extends JLayeredPane {
                 break;
         }
         return false;
+    }
+    
+    public void changeScoreByType(Engine game, Score score, Pile tempPile) {
+    	for (Pile p: game.getPiles()) {
+    		if (p.equals(this)) {
+    			if (game.getPiles().contains(tempPile.getParentPile())) {
+    				score.addScore(3);
+    				break;
+    			}
+    			else if (tempPile.getParentPile().equals(game.getGetPile())) {
+    				score.addScore(5);
+    				break;
+    			}
+    		}
+    	}
+    	
+    	for (Pile p: game.getFinalPiles()) {
+    		if (p.equals(this)) {
+    			score.addScore(10);
+    			break;
+    		}
+    	}
     }
 
     public boolean isOptimizedDrawingEnabled() {

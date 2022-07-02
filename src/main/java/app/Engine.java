@@ -9,10 +9,10 @@ import java.util.List;
 public class Engine {
     private final int PILE_NUMBER = 7;
 
-    private List<Pile> piles;
-    private List<Pile> finalPiles;
-    private Pile drawPile;
-    private Pile getPile;
+    private List<Pile> piles; //Tableau piles
+    private List<Pile> finalPiles; //Foundation piles
+    private Pile drawPile; //Stock deck
+    private Pile getPile; //Waste pile, this is where the deck cards go when drawn from the stock deck
     private List<Pile> allPiles;
     private Deck deck;
 
@@ -94,6 +94,9 @@ public class Engine {
         }
     }
 
+    /*
+     * returns all getPile cards to the drawPile
+     */
     public void turnGetPile() {
         if(!drawPile.getCards().isEmpty()) return;
 
@@ -105,6 +108,9 @@ public class Engine {
         }
     }
 
+    /*
+     * Checks for a win condition
+     */
     public boolean checkWin() {
         for(Pile pile : finalPiles) {
             if(pile.getCards().size() != 13)

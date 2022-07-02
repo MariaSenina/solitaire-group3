@@ -18,14 +18,17 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
     private JPanel columns;
     private JPanel topColumns;
     private JLayeredPane layeredPane;
+    private JLabel scoreCounter;
     private Engine game;
     private Pile tempPile;
     private Point mouseOffset;
     private GuiActionListener actionListener;
+    private Score score;
 
     public GUI (Engine game) {
         this.game = game;
         this.actionListener = new GuiActionListener(this);
+        score = new Score("standard");
         initializeGui();
         initializeCardPositions();
     }
@@ -79,6 +82,11 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
         setVisible(true);
 
         mouseOffset = new Point(0, 0);
+                        
+        scoreCounter = new JLabel("Score: "+score.getScore());
+        scoreCounter.setFont(new Font("Serif", Font.BOLD, 25));
+        
+        gameArea.add(scoreCounter);
     }
 
     private void initializeCardPositions() {
@@ -106,6 +114,15 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
     }
 
     public void reset() {
+    	score = new Score("standard");
+    	scoreCounter.setText("Score: "+score.getScore());
+        game.resetCards();
+        initializeCardPositions();
+        repaint();
+    }
+    
+    public void resetVegas() {
+    	score = new Score("vegas");
         game.resetCards();
         initializeCardPositions();
         repaint();
@@ -128,8 +145,8 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
         menuBar.add(FileMenu);
 
         MenuOption[] fileOptions = new MenuOption[] {
-                new MenuOption(menuOptions.get("New"), KeyEvent.VK_N),
-               // new MenuOption(menuOptions.get("Exit"), KeyEvent.VK_X)
+        		new MenuOption(menuOptions.get("New"), KeyEvent.VK_N),
+        		// new MenuOption(menuOptions.get("Exit"), KeyEvent.VK_X)
         };
 
         for(MenuOption option: fileOptions) {
@@ -225,11 +242,13 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
                 if(r.contains(mousePos) && p.acceptsPile(tempPile)) {
                     p.merge(tempPile);
                     match = true;
+                    p.changeScoreByType(game, score, tempPile);
+                    scoreCounter.setText("Score: "+score.getScore());
                     break;
                 }
             }
 
-            if(!match) tempPile.getParentPile().merge(tempPile);
+            if(!match)	tempPile.getParentPile().merge(tempPile); //If merge with new pile is illegal, return card to previous pile
 
             layeredPane.remove(tempPile);
             tempPile = null;
