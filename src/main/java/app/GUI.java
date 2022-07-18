@@ -24,6 +24,7 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
     private Point mouseOffset;
     private GuiActionListener actionListener;
     private Score score;
+    private Boolean isMouseReleased = true;
 
     public GUI (Engine game) {
         this.game = game;
@@ -123,6 +124,7 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
     
     public void resetVegas() {
     	score = new Score("vegas");
+    	scoreCounter.setText("Score: "+score.getScore());
         game.resetCards();
         initializeCardPositions();
         repaint();
@@ -132,7 +134,8 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
         menuOptions = new HashMap();
 
         menuOptions.put("File", "File");
-        menuOptions.put("New", "New");
+        menuOptions.put("New", "New Standard game");
+        menuOptions.put("Vegas", "New Vegas game");
         menuOptions.put("Exit", "Exit");
     }
 
@@ -146,6 +149,7 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
 
         MenuOption[] fileOptions = new MenuOption[] {
         		new MenuOption(menuOptions.get("New"), KeyEvent.VK_N),
+        		new MenuOption(menuOptions.get("Vegas"), KeyEvent.VK_V),
         		// new MenuOption(menuOptions.get("Exit"), KeyEvent.VK_X)
         };
 
@@ -176,10 +180,10 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(e.getComponent() instanceof Card) {
+    	if(e.getComponent() instanceof Card) {
             Card c = (Card)e.getComponent();
             Pile p = (Pile)c.getParent();
-
+            
             switch(p.getType()) {
                 case DRAW:
                     game.drawCard();
@@ -197,34 +201,40 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if(e.getComponent() instanceof Card) {
-            Card c = (Card)e.getComponent();
-
-            if(c.isReversed())
-                return;
-
-            Pile p  = (Pile)c.getParent();
-
-            if(p.getCards().isEmpty() || p.getType() == PileType.FINAL) return;
-
-            tempPile = p.split(c);
-
-
-            layeredPane.add(tempPile, JLayeredPane.DRAG_LAYER);
-
-            Point pos = getLocationOnScreen();
-            mouseOffset = e.getPoint();
-            pos.x = e.getLocationOnScreen().x - pos.x - mouseOffset.x;
-            pos.y = e.getLocationOnScreen().y - pos.y - mouseOffset.y;
-
-            tempPile.setLocation(pos);
-
-            repaint();
-        }
+    	if (isMouseReleased == true) {
+	    	isMouseReleased = false;
+	    	
+	    	if(e.getComponent() instanceof Card) {
+	        	Card c = (Card)e.getComponent();
+	
+	            if(c.isReversed())
+	                return;
+	
+	            Pile p  = (Pile)c.getParent();
+	
+	            if(p.getCards().isEmpty() || p.getType() == PileType.FINAL) return;
+	
+	            tempPile = p.split(c);
+	
+	
+	            layeredPane.add(tempPile, JLayeredPane.DRAG_LAYER);
+	
+	            Point pos = getLocationOnScreen();
+	            mouseOffset = e.getPoint();
+	            pos.x = e.getLocationOnScreen().x - pos.x - mouseOffset.x;
+	            pos.y = e.getLocationOnScreen().y - pos.y - mouseOffset.y;
+	
+	            tempPile.setLocation(pos);
+	
+	            repaint();
+	        }
+    	}
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+    	isMouseReleased = true;
+    	
         if(tempPile != null) {
 
             Point mousePos = e.getLocationOnScreen();
@@ -242,7 +252,7 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
                 if(r.contains(mousePos) && p.acceptsPile(tempPile)) {
                     p.merge(tempPile);
                     match = true;
-                    p.changeScoreByType(game, score, tempPile);
+                    p.notifyChange(game, score, tempPile);
                     scoreCounter.setText("Score: "+score.getScore());
                     break;
                 }
@@ -256,7 +266,7 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
             repaint();
 
             if(game.checkWin()) {
-                JOptionPane.showMessageDialog(this, "You won! Congrats!");
+                JOptionPane.showMessageDialog(this, "You won! Congrats! "+"Match score: "+score.getScore());
                 reset();
             }
         }

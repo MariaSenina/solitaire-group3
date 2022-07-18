@@ -86,8 +86,9 @@ public class Engine {
     }
 
     public void clickPile(Pile pile) {
-        if(!pile.getCards().isEmpty()) {
-            Card c = pile.getCards().get(pile.getCards().size() - 1);
+    	if(!pile.getCards().isEmpty()) {
+        	Card c = pile.getCards().get(pile.getCards().size() - 1);
+            
             if(c.isReversed()) {
                 c.setReversed(false);
             }

@@ -131,15 +131,15 @@ public class Pile extends JLayeredPane {
         return false;
     }
     
-    public void changeScoreByType(Engine game, Score score, Pile tempPile) {
+    public void notifyChange(Engine game, Score score, Pile tempPile) {
     	for (Pile p: game.getPiles()) {
     		if (p.equals(this)) {
     			if (game.getPiles().contains(tempPile.getParentPile())) {
-    				score.addScore(3);
+    				score.changeScore("moveTabPile");
     				break;
     			}
     			else if (tempPile.getParentPile().equals(game.getGetPile())) {
-    				score.addScore(5);
+    				score.changeScore("toTableau");
     				break;
     			}
     		}
@@ -147,7 +147,7 @@ public class Pile extends JLayeredPane {
     	
     	for (Pile p: game.getFinalPiles()) {
     		if (p.equals(this)) {
-    			score.addScore(10);
+    			score.changeScore("toFoundation");
     			break;
     		}
     	}

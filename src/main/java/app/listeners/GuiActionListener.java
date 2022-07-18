@@ -25,8 +25,12 @@ public class GuiActionListener implements ActionListener {
 
        // if(item.getText().equals(gui.getMenuOptions().get("Exit"))) {
        //     gui.dispose(); }
-        if(item.getText().equals(gui.getMenuOptions().get("New"))) {
+        if (item.getText().equals(gui.getMenuOptions().get("New"))) {
             gui.reset();
+        }
+        
+        if (item.getText().equals(gui.getMenuOptions().get("Vegas"))) {
+        	gui.resetVegas();
         }
     }
 }
