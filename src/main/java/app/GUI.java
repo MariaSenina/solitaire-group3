@@ -137,30 +137,52 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
         menuOptions.put("New", "New Standard game");
         menuOptions.put("Vegas", "New Vegas game");
         menuOptions.put("Exit", "Exit");
+        
+        menuOptions.put("About", "About");
+        menuOptions.put("FB", "Feedback");
     }
 
     
     private void createTopMenu() {
         menuBar = new JMenuBar();
 
+        // File Menu
         JMenu FileMenu = new JMenu("File");
         FileMenu.setMnemonic(KeyEvent.VK_F);
         menuBar.add(FileMenu);
 
         MenuOption[] fileOptions = new MenuOption[] {
-        		new MenuOption(menuOptions.get("New"), KeyEvent.VK_N),
-        		new MenuOption(menuOptions.get("Vegas"), KeyEvent.VK_V),
+        		new MenuOption(menuOptions.get("New"), KeyEvent.VK_1),
+        		new MenuOption(menuOptions.get("Vegas"), KeyEvent.VK_2),
         		// new MenuOption(menuOptions.get("Exit"), KeyEvent.VK_X)
         };
-
+        
         for(MenuOption option: fileOptions) {
             JMenuItem opt = new JMenuItem(option.name);
-            if(option.shortcut != 0) opt.setMnemonic(option.shortcut);
+            if (option.shortcut != 0) opt.setMnemonic(option.shortcut);
 
             opt.addActionListener(actionListener);
             FileMenu.add(opt);
         }
-
+        
+        // Help Menu
+        JMenu HelpMenu = new JMenu("Help");
+        HelpMenu.setMnemonic(KeyEvent.VK_H);
+        menuBar.add(HelpMenu);
+        
+        MenuOption[] helpOptions = new MenuOption[] {
+	        new MenuOption(menuOptions.get("About"), KeyEvent.VK_A),
+	        new MenuOption(menuOptions.get("FB"), KeyEvent.VK_F2)
+        };
+        
+        for (MenuOption option: helpOptions) {
+        	JMenuItem opt = new JMenuItem(option.name);
+        	if (option.shortcut != 0) opt.setMnemonic(option.shortcut);
+        	
+        	opt.addActionListener(actionListener);
+        	HelpMenu.add(opt);
+        }
+        
         setJMenuBar(menuBar);
     }
 

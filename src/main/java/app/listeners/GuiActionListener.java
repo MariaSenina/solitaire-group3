@@ -1,6 +1,8 @@
 package app.listeners;
 
 import app.GUI;
+import app.AboutDialog;
+import app.FeedbackLink;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -31,6 +33,24 @@ public class GuiActionListener implements ActionListener {
         
         if (item.getText().equals(gui.getMenuOptions().get("Vegas"))) {
         	gui.resetVegas();
+        }
+        
+        if (item.getText().equals(gui.getMenuOptions().get("About"))) {
+        	//if(event.getSource()==about) {
+        		//JOptionPane.showMessageDialog(about, "Game instruction");
+        	//}
+        	AboutDialog ad = new AboutDialog();
+        	ad.setVisible(true);
+		}
+        
+        if (item.getText().equals(gui.getMenuOptions().get("FB"))) {
+        	SwingUtilities.invokeLater(new Runnable() {
+       		 
+                @Override
+                public void run() {
+                    new FeedbackLink().setVisible(true);;
+                }
+            });;
         }
     }
 }
