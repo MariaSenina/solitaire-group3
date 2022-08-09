@@ -41,7 +41,7 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
         setSize(900, 700);
 
         try {
-            setContentPane((new JPanelWithBackground("/background.jpg", this)));
+            setContentPane((new JPanelWithBackground("background.jpg", this)));
         } catch (IOException e) {
             e.printStackTrace();
         }

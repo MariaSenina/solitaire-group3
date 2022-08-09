@@ -3,6 +3,7 @@ package app;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -11,9 +12,12 @@ public class JPanelWithBackground extends JPanel {
     private GUI gui;
 
     public JPanelWithBackground(String fileName, GUI gui) throws IOException {
+    	String filepath = System.getProperty("filepath");
+        String path = filepath + "\\";
+    	
         this.gui = gui;
-        URL urlToImage = gui.getClass().getResource(fileName);
-        backgroundImage = ImageIO.read(urlToImage);
+        File imageFile = new File(path + fileName);
+        backgroundImage = ImageIO.read(imageFile);
     }
 
     public void paintComponent(Graphics graphics) {

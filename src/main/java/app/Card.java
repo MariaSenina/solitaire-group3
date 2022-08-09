@@ -6,8 +6,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 public class Card extends JPanel {
     private int value;
@@ -21,13 +21,20 @@ public class Card extends JPanel {
         this.value = value;
         this.suit = suit;
         isReversed = false;
+        
+        String filepath = System.getProperty("filepath");
+        String path = filepath + "\\";
 
         try {
-            URL url = getClass().getResource("/cards/" + this + ".png");
-            frontImage = ImageIO.read(url);
-
-            url = getClass().getResource("/cards/back.png");
-            backImage = ImageIO.read(url);
+        	File imageFile;
+        	
+        	String foregroundImgPath = path + this + ".png";
+            imageFile = new File(foregroundImgPath);
+        	frontImage = ImageIO.read(imageFile);
+            
+            String backgroundImgPath = path + "back.png";
+            imageFile = new File(backgroundImgPath);
+            backImage = ImageIO.read(imageFile);
 
             setBounds(0, 0, frontImage.getWidth(), frontImage.getHeight());
         } catch(IOException e) {

@@ -6,7 +6,7 @@ public class Game {
         new GUI(new Engine());
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) {    	
         new Game();
     }
 }
