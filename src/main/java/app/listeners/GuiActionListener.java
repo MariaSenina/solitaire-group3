@@ -28,17 +28,19 @@ public class GuiActionListener implements ActionListener {
        // if(item.getText().equals(gui.getMenuOptions().get("Exit"))) {
        //     gui.dispose(); }
         if (item.getText().equals(gui.getMenuOptions().get("New"))) {
-            gui.reset();
+            gui.setMode("standard");
+        	gui.reset();
         }
         
         if (item.getText().equals(gui.getMenuOptions().get("Vegas"))) {
-        	gui.resetVegas();
+        	gui.setMode("vegas");
+        	gui.reset();
         }
         
         if (item.getText().equals(gui.getMenuOptions().get("About"))) {
-        	//if(event.getSource()==about) {
-        		//JOptionPane.showMessageDialog(about, "Game instruction");
-        	//}
+//        	if(event.getSource()==about) {
+//        		JOptionPane.showMessageDialog(about, "Game instruction");
+//        	}
         	AboutDialog ad = new AboutDialog();
         	ad.setVisible(true);
 		}
@@ -51,6 +53,16 @@ public class GuiActionListener implements ActionListener {
                     new FeedbackLink().setVisible(true);;
                 }
             });;
+        }
+        
+        if (item.getText().equals(gui.getMenuOptions().get("Easy"))) {
+        	gui.setDifficulty(1);
+        	gui.reset();
+        }
+        
+        if (item.getText().equals(gui.getMenuOptions().get("Hard"))) {
+        	gui.setDifficulty(2);
+        	gui.reset();
         }
     }
 }

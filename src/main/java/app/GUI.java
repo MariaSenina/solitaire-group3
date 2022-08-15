@@ -17,14 +17,18 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
     private JPanel gameArea;
     private JPanel columns;
     private JPanel topColumns;
+    private JPanel infoText;
     private JLayeredPane layeredPane;
     private JLabel scoreCounter;
+    private JLabel difficultyMarker;
     private Engine game;
     private Pile tempPile;
     private Point mouseOffset;
     private GuiActionListener actionListener;
     private Score score;
     private Boolean isMouseReleased = true;
+    private int difficulty = 1;
+	private String gameMode = "standard";
 
     public GUI (Engine game) {
         this.game = game;
@@ -42,6 +46,7 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
 
         try {
             setContentPane((new JPanelWithBackground("background.jpg", this)));
+//        	setContentPane((new JPanelWithBackground("/background.jpg", this)));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,21 +78,30 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
         topColumns.setOpaque(false);
         topColumns.setLayout(topFlow);
 
-
         gameArea.add(topColumns);
         gameArea.add(columns);
-
-        add(gameArea);
 
         layeredPane = getLayeredPane();
         setVisible(true);
 
         mouseOffset = new Point(0, 0);
+        
+        infoText = new JPanel(new FlowLayout(FlowLayout.RIGHT, 50, 0));
+        infoText.setOpaque(false);
                         
         scoreCounter = new JLabel("Score: "+score.getScore());
         scoreCounter.setFont(new Font("Serif", Font.BOLD, 25));
         
-        gameArea.add(scoreCounter);
+        infoText.add(scoreCounter);
+        
+        difficultyMarker = new JLabel("Difficulty: "+difficultyToString());
+        difficultyMarker.setFont(new Font("Serif", Font.BOLD, 25));
+        
+        infoText.add(difficultyMarker);
+        
+        gameArea.add(infoText, BorderLayout.SOUTH);
+        
+        add(gameArea);
     }
 
     private void initializeCardPositions() {
@@ -115,16 +129,9 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
     }
 
     public void reset() {
-    	score = new Score("standard");
+    	score = new Score(gameMode);
     	scoreCounter.setText("Score: "+score.getScore());
-        game.resetCards();
-        initializeCardPositions();
-        repaint();
-    }
-    
-    public void resetVegas() {
-    	score = new Score("vegas");
-    	scoreCounter.setText("Score: "+score.getScore());
+    	difficultyMarker.setText("Difficulty: "+difficultyToString());
         game.resetCards();
         initializeCardPositions();
         repaint();
@@ -140,6 +147,9 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
         
         menuOptions.put("About", "About");
         menuOptions.put("FB", "Feedback");
+        
+        menuOptions.put("Easy", "Easy");
+        menuOptions.put("Hard", "Hard");
     }
 
     
@@ -183,6 +193,24 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
         	HelpMenu.add(opt);
         }
         
+        // Difficulty Menu
+        JMenu DifficultyMenu = new JMenu("Difficulty");
+        DifficultyMenu.setMnemonic(KeyEvent.VK_D);
+        menuBar.add(DifficultyMenu);
+        
+        MenuOption[] difficultyOptions = new MenuOption[] {
+	        new MenuOption(menuOptions.get("Easy"), KeyEvent.VK_E),
+	        new MenuOption(menuOptions.get("Hard"), KeyEvent.VK_H)
+        };
+        
+        for (MenuOption option: difficultyOptions) {
+        	JMenuItem opt = new JMenuItem(option.name);
+        	if (option.shortcut != 0) opt.setMnemonic(option.shortcut);
+        	
+        	opt.addActionListener(actionListener);
+        	DifficultyMenu.add(opt);
+        }
+        
         setJMenuBar(menuBar);
     }
 
@@ -202,7 +230,8 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-    	if(e.getComponent() instanceof Card) {
+    	
+    	if (e.getComponent() instanceof Card) {
             Card c = (Card)e.getComponent();
             Pile p = (Pile)c.getParent();
             
@@ -217,9 +246,35 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
                     game.turnGetPile();
                     break;
             }
+            
+            if (e.getClickCount() == 2 && difficulty == 1) {
+            	ArrayList<Pile> autoPiles = new ArrayList<Pile>(game.getFinalPiles());
+            	autoPiles.addAll(game.getPiles());
+            	
+            	tempPile = p.split(c);
+            	boolean match = false;
+            	
+            	if (p.getType() == PileType.NORMAL || p.getType() == PileType.GET) {
+            		
+            		for (Pile targetPile: autoPiles) {
+            			
+            			if (targetPile.acceptsPile(tempPile)) {
+            				targetPile.merge(tempPile);
+            				notifyChange(tempPile, targetPile);
+            				match = true;
+            				break;
+            			}
+        			}
+            	}
+            	
+            	if(!match)	tempPile.getParentPile().merge(tempPile);
+            	
+            	tempPile = null;
+            }
+            
             repaint();
         }
-    }
+	}
 
     @Override
     public void mousePressed(MouseEvent e) {
@@ -237,7 +292,6 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
 	            if(p.getCards().isEmpty() || p.getType() == PileType.FINAL) return;
 	
 	            tempPile = p.split(c);
-	
 	
 	            layeredPane.add(tempPile, JLayeredPane.DRAG_LAYER);
 	
@@ -262,7 +316,7 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
             Point mousePos = e.getLocationOnScreen();
             boolean match = false;
 
-            ArrayList<Pile> droppable = new ArrayList(game.getPiles());
+            ArrayList<Pile> droppable = new ArrayList<Pile>(game.getPiles());
             droppable.addAll(game.getFinalPiles());
 
             for(Pile p: droppable) {
@@ -274,13 +328,15 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
                 if(r.contains(mousePos) && p.acceptsPile(tempPile)) {
                     p.merge(tempPile);
                     match = true;
-                    p.notifyChange(game, score, tempPile);
-                    scoreCounter.setText("Score: "+score.getScore());
+                    notifyChange(tempPile, p);
                     break;
                 }
             }
 
-            if(!match)	tempPile.getParentPile().merge(tempPile); //If merge with new pile is illegal, return card to previous pile
+            /*
+             * If merge with new pile is illegal, return card to previous pile
+             */
+            if(!match)	tempPile.getParentPile().merge(tempPile);
 
             layeredPane.remove(tempPile);
             tempPile = null;
@@ -293,6 +349,30 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
             }
         }
     }
+    
+    public void notifyChange(Pile tempPile, Pile targetPile) {
+    	for (Pile p: game.getPiles()) {
+    		if (p.equals(targetPile)) {
+    			if (game.getPiles().contains(tempPile.getParentPile())) {
+    				score.changeScore("moveTabPile");
+    				break;
+    			}
+    			else if (tempPile.getParentPile().equals(game.getGetPile())) {
+    				score.changeScore("toTableau");
+    				break;
+    			}
+    		}
+    	}
+    	
+    	for (Pile p: game.getFinalPiles()) {
+    		if (p.equals(targetPile)) {
+    			score.changeScore("toFoundation");
+    			break;
+    		}
+    	}
+    	
+    	scoreCounter.setText("Score: "+score.getScore());
+	}
 
     public Map<String, String> getMenuOptions() {
         return menuOptions;
@@ -304,4 +384,27 @@ public class GUI extends JFrame implements MouseListener, MouseMotionListener {
     public void mouseExited(MouseEvent arg0) {}
     @Override
     public void mouseMoved(MouseEvent e) {}
+    
+    public void setDifficulty(int i) {
+    	this.difficulty = i;
+    }
+    
+    public void setMode(String mode) {
+    	this.gameMode  = mode;
+    }
+    
+    public String difficultyToString() {
+		String difficultyString = "";
+    	
+    	switch (difficulty) {
+    		case 1:
+    			difficultyString = "Easy";
+    			break;
+    		case 2:
+    			difficultyString = "Hard";
+    			break;
+		}
+    	
+    	return difficultyString;
+    }
 }

@@ -95,62 +95,42 @@ public class Pile extends JLayeredPane {
         Card newCard = p.cards.get(0);
         Card topCard;
 
-        switch(type) {
-            case NORMAL:
-                if(cards.isEmpty()) {
-                    if(newCard.getValue() == 14) return true;
-                    return false;
-                }
-
-                topCard = cards.get(cards.size() - 1);
-                if(topCard.isReversed()) return false;
-
-                if(topCard.getSuit().isRed != newCard.getSuit().isRed)
-                    if(topCard.getValue() == newCard.getValue() + 1 ||
-                            topCard.getValue() ==  12 && newCard.getValue() == 10) {
-                        return true;
-                    }
-                break;
-            case FINAL:
-                if(p.cards.size() > 1) return false;
-
-                if(cards.isEmpty() && newCard.getValue() == 1) {
-                    suitFilter = newCard.getSuit();
-                    return true;
-                }
-
-                if(suitFilter != newCard.getSuit()) return false;
-
-                topCard = cards.get(cards.size() - 1);
-                if(topCard.getValue() == newCard.getValue() - 1 ||
-                        topCard.getValue() ==  10 && newCard.getValue() == 12) {
-                    return true;
-                }
-                break;
+        if (!newCard.isReversed()) {
+	        switch(type) {
+	            case NORMAL:
+	                if(cards.isEmpty()) {
+	                    if(newCard.getValue() == 14) return true;
+	                    return false;
+	                }
+	
+	                topCard = cards.get(cards.size() - 1);
+	                if(topCard.isReversed()) return false;
+	
+	                if(topCard.getSuit().isRed != newCard.getSuit().isRed)
+	                    if(topCard.getValue() == newCard.getValue() + 1 ||
+	                            topCard.getValue() ==  12 && newCard.getValue() == 10) {
+	                        return true;
+	                    }
+	                break;
+	            case FINAL:
+	                if(p.cards.size() > 1) return false;
+	
+	                if(cards.isEmpty() && newCard.getValue() == 1) {
+	                    suitFilter = newCard.getSuit();
+	                    return true;
+	                }
+	
+	                if(suitFilter != newCard.getSuit()) return false;
+	
+	                topCard = cards.get(cards.size() - 1);
+	                if(topCard.getValue() == newCard.getValue() - 1 ||
+	                        topCard.getValue() ==  10 && newCard.getValue() == 12) {
+	                    return true;
+	                }
+	                break;
+	        }
         }
         return false;
-    }
-    
-    public void notifyChange(Engine game, Score score, Pile tempPile) {
-    	for (Pile p: game.getPiles()) {
-    		if (p.equals(this)) {
-    			if (game.getPiles().contains(tempPile.getParentPile())) {
-    				score.changeScore("moveTabPile");
-    				break;
-    			}
-    			else if (tempPile.getParentPile().equals(game.getGetPile())) {
-    				score.changeScore("toTableau");
-    				break;
-    			}
-    		}
-    	}
-    	
-    	for (Pile p: game.getFinalPiles()) {
-    		if (p.equals(this)) {
-    			score.changeScore("toFoundation");
-    			break;
-    		}
-    	}
     }
 
     public boolean isOptimizedDrawingEnabled() {

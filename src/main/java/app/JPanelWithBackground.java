@@ -17,6 +17,8 @@ public class JPanelWithBackground extends JPanel {
     	
         this.gui = gui;
         File imageFile = new File(path + fileName);
+//        URL imageFile = gui.getClass().getResource(fileName);
+        
         backgroundImage = ImageIO.read(imageFile);
     }
 
